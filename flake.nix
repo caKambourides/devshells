@@ -13,13 +13,16 @@
       inherit system;
       overlays = [rust-overlay.overlays.default];
     };
-    toolchain = pkgs.rust-bin.fromRustupToolchainFile ./toolchain.toml;
+    #TODO toolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+    toolchain = pkgs.rust-bin.nightly.latest.default;
   in {
     devShells.${system} = {
       
 bevy = pkgs.mkShell {
       packages = [
-        toolchain pkgs.rust-analyzer-unwrapped
+        toolchain
+
+        pkgs.rust-analyzer-unwrapped
 
         #rust
         pkgs.cargo
@@ -35,18 +38,20 @@ bevy = pkgs.mkShell {
         # y https:/
         # /github.com/bevyengine/bevy/blob/e67cfdf82b5726db4d449e9af31b865a5324aa19/docs/linux_dependencies.md#nix
         pkgs.udev
-        pkgs.alsa-lib
+        pkgs.alsa-lib-with-plugins
         pkgs.vulkan-loader
         pkgs.libxkbcommon
         pkgs.wayland
         #bevy optimized
-        
+        pkgs.clang
+        pkgs.mold-wrapped        
         
         #env = {
         #  RUST_BACKTRACE = "full";
         #};
             ];
-      RUST_SRC_PATH = "${toolchain}/lib/rustlib/src/rust/library";
+            LD_LIBRARY_PATH = lib.makeLibraryParh packages;
+      #TODO RUST_SRC_PATH = "${toolchain}/lib/rustlib/src/rust/library";
 
     };
 
