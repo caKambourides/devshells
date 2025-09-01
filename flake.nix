@@ -19,6 +19,13 @@
     devShells.${system} = {
       
 bevy = pkgs.mkShell {
+      buildInputs = [        
+        pkgs.udev
+        pkgs.alsa-lib-with-plugins
+        pkgs.vulkan-loader
+        pkgs.libxkbcommon
+        pkgs.wayland
+      ];
       packages = [
         toolchain
 
@@ -37,11 +44,11 @@ bevy = pkgs.mkShell {
         # bev
         # y https:/
         # /github.com/bevyengine/bevy/blob/e67cfdf82b5726db4d449e9af31b865a5324aa19/docs/linux_dependencies.md#nix
-        pkgs.udev
-        pkgs.alsa-lib-with-plugins
-        pkgs.vulkan-loader
-        pkgs.libxkbcommon
-        pkgs.wayland
+        # pkgs.udev
+        # pkgs.alsa-lib-with-plugins
+        # pkgs.vulkan-loader
+        # pkgs.libxkbcommon
+        # pkgs.wayland
         #bevy optimized
         pkgs.clang
         pkgs.mold-wrapped        
@@ -50,9 +57,9 @@ bevy = pkgs.mkShell {
         #  RUST_BACKTRACE = "full";
         #};
             ];
-            LD_LIBRARY_PATH = lib.makeLibraryParh packages;
-      #TODO RUST_SRC_PATH = "${toolchain}/lib/rustlib/src/rust/library";
-
+       shellHook = ''
+            export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${pkgs.lib.makeLibraryPath pkgs.alsa-lib-with-plugins pkgs.udev pkgs.vulkan-loader pkgs.libxkbcommon pkgs.wayland }"
+          '';
     };
 
 typescript = pkgs.mkShell {
